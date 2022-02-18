@@ -1,6 +1,14 @@
 package lesson1;
 
 import kotlin.NotImplementedError;
+import kotlin.Pair;
+import lesson7.knapsack.Fill;
+
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.*;
 
 @SuppressWarnings("unused")
 public class JavaTasks {
@@ -64,8 +72,51 @@ public class JavaTasks {
      *
      * В случае обнаружения неверного формата файла бросить любое исключение.
      */
-    static public void sortAddresses(String inputName, String outputName) {
-        throw new NotImplementedError();
+//    данные хранятся в отсортированном виде внутри TreeMap<названиеУлицы, TreeMap<номерУлицы, TreeSet<имяФамилия>>>
+//    в первом цикле данная Map'а заполняется данными, а во втором цикле данные записываются в файл
+//    Трдоемкость: O(N*log(N))
+//    Ресурсоемкость: T(N)
+    static public void sortAddresses(String inputName, String outputName) throws Exception {
+        try {
+            Map<String, TreeMap<Integer, TreeSet<String>>> data = new TreeMap<>();
+            File outputFile = new File(outputName);
+            PrintWriter printWriter = new PrintWriter(outputFile, StandardCharsets.UTF_8);
+
+            List<String> lines = Files.readAllLines(Paths.get(inputName), StandardCharsets.UTF_8);
+            for(String line: lines){
+                String[] name = line.split("\\s-\\s");
+                String[] street = name[1].split("\\s");
+                Integer k = Integer.parseInt(street[1]);
+
+                if (data.containsKey(street[0])) {
+                    if (data.get(street[0]).containsKey(k)) {
+                        data.get(street[0]).get(k).add(name[0]);
+                    } else {
+                        data.get(street[0]).put(k, new TreeSet<>(Collections.singleton(name[0])));
+                    }
+                } else {
+                    data.put(street[0], new TreeMap<>());
+                    data.get(street[0]).put(k, new TreeSet<>(Collections.singleton(name[0])));
+                }
+            }
+
+            data.forEach((streetName, streetNumber) -> {
+                streetNumber.forEach((num, names) -> {
+                    String str = names.toString();
+                    StringBuilder stringBuilder = new StringBuilder(streetName);
+                    stringBuilder.append(" ");
+                    stringBuilder.append(num);
+                    stringBuilder.append(" - ");
+                    stringBuilder.append(str, 1, str.length() - 1);
+                    printWriter.println(stringBuilder);
+                });
+            });
+            printWriter.close();
+
+        } catch (IOException e) {
+            Exception IllegalArgumentException = null;
+            throw IllegalArgumentException;
+        }
     }
 
     /**
@@ -98,8 +149,32 @@ public class JavaTasks {
      * 99.5
      * 121.3
      */
+//    Трдоемкость: O(N*log(N))
+//    Ресурсоемкость: T(N) (создается лист)
     static public void sortTemperatures(String inputName, String outputName) {
-        throw new NotImplementedError();
+        try {
+            File file = new File(inputName);
+            PrintWriter printWriter = new PrintWriter(outputName, StandardCharsets.UTF_8);
+            FileReader fileReader = new FileReader(file);
+            BufferedReader bufferedReader = new BufferedReader(fileReader);
+            List<Double> list = new ArrayList<>();
+
+            String line = bufferedReader.readLine();
+            while (line != null) {
+                list.add(Double.parseDouble(line));
+                line = bufferedReader.readLine();
+            }
+
+            Collections.sort(list);
+
+            for(Double d: list){
+                printWriter.println(d);
+            }
+
+            printWriter.close();
+        } catch (IOException e) {
+            System.out.println("File not found");
+        }
     }
 
     /**

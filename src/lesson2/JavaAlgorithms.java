@@ -111,7 +111,25 @@ public class JavaAlgorithms {
      * Справка: простым считается число, которое делится нацело только на 1 и на себя.
      * Единица простым числом не считается.
      */
+//    алгоритм Решето Эратосфена
+//    Трдоемкость: O(N*log(log(N)))
+//    Ресурсоемкость: T(N)
     static public int calcPrimesNumber(int limit) {
-        throw new NotImplementedError();
+        if (limit <= 1)
+            return 0;
+        int answer = 0;
+
+        int[] arr = new int[limit + 1];
+        
+        for (int i = 2; i < arr.length; i++) {
+            if (arr[i] == 0) {
+                answer++;
+                for (int j = 2 * i; j < arr.length; j += i) {
+                    arr[j]--;
+                }
+            }
+        }
+
+        return answer;
     }
 }

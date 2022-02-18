@@ -85,6 +85,12 @@ abstract class AbstractTaskTests : AbstractFileTests() {
         } finally {
             File("temp.txt").delete()
         }
+        try {
+            sortAddresses("input/myTest1.txt", "temp.txt")
+            assertFileContent("temp.txt", File("input/myOut1.txt").readLines())
+        } finally {
+            File("temp.txt").delete()
+        }
     }
 
     private fun generateTemperatures(size: Int): PerfResult<Unit> {
@@ -152,6 +158,13 @@ abstract class AbstractTaskTests : AbstractFileTests() {
 
         val perf = estimate(listOf(10, 100, 1000)) {
             testGeneratedTemperatures(it)
+        }
+
+        try {
+            sortTemperatures("input/myTest2.txt", "temp.txt")
+            assertFileContent("temp.txt", File("input/myOut2.txt").readLines())
+        } finally {
+            File("temp.txt").delete()
         }
 
         println("sortTemperatures: $perf")
