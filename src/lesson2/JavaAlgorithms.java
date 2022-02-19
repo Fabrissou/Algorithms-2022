@@ -3,6 +3,8 @@ package lesson2;
 import kotlin.NotImplementedError;
 import kotlin.Pair;
 
+import java.util.Arrays;
+
 @SuppressWarnings("unused")
 public class JavaAlgorithms {
     /**
@@ -97,8 +99,42 @@ public class JavaAlgorithms {
      * Если имеется несколько самых длинных общих подстрок одной длины,
      * вернуть ту из них, которая встречается раньше в строке first.
      */
-    static public String longestCommonSubstring(String firs, String second) {
-        throw new NotImplementedError();
+//    Трдоемкость: O(N^2)
+//    Ресурсоемкость: T(N^2)
+    static public String longestCommonSubstring(String first, String second) {
+        int[][] matrix = new int[first.length()][second.length()];
+        StringBuilder answer = new StringBuilder();
+        int max = 0;
+        int maxI = 0;
+        int diagonal;
+
+        for (int i = 0; i < first.length(); i++) {
+            for (int j = 0; j < second.length(); j++) {
+                if (first.charAt(i) == second.charAt(j)) {
+                    if ((i - 1 >= 0) & (j - 1 >= 0)) {
+                        diagonal = matrix[i - 1][j - 1] + 1;
+                    } else {
+                        diagonal = 1;
+                    }
+
+                    if (diagonal > max) {
+                        max = diagonal;
+                        maxI = i;
+                    }
+
+                    matrix[i][j] = diagonal;
+                }
+
+            }
+        }
+
+        while (max > 0) {
+            answer.append(first.charAt(maxI));
+            maxI--;
+            max--;
+        }
+
+        return answer.reverse().toString();
     }
 
     /**

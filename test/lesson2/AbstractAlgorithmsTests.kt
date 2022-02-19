@@ -120,6 +120,13 @@ abstract class AbstractAlgorithmsTests {
                 File("input/ruslan_ludmila_2.txt").readText()
             ).trim()
         )
+
+
+
+        assertEquals("РрР", longestCommonSubstring("РрРооо", "ОооОООооРрРОооооООоООООоо"))
+        assertEquals("", longestCommonSubstring("КаспийСкое", "трунь"))
+        assertEquals("гит", longestCommonSubstring("гитХаб", "гитхаб"))
+        assertEquals("", longestCommonSubstring("", ""))
     }
 
     fun calcPrimesNumber(calcPrimesNumber: (Int) -> Int) {
