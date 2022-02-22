@@ -107,7 +107,6 @@ public class JavaAlgorithms {
         int max = 0;
         int maxI = 0;
         int diagonal;
-
         for (int i = 0; i < first.length(); i++) {
             for (int j = 0; j < second.length(); j++) {
                 if (first.charAt(i) == second.charAt(j)) {
