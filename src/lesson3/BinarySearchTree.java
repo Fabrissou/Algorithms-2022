@@ -8,8 +8,19 @@ import org.jetbrains.annotations.Nullable;
 // attention: Comparable is supported but Comparator is not
 public class BinarySearchTree<T extends Comparable<T>> extends AbstractSet<T> implements CheckableSortedSet<T> {
 
-    private static class Node<T> {
-        final T value;
+    public Node<T> getRoot() {
+        return root;
+    }
+
+
+
+
+
+
+
+//make this private
+    static class Node<T> {
+        T value;
         Node<T> left = null;
         Node<T> right = null;
 
@@ -101,9 +112,60 @@ public class BinarySearchTree<T extends Comparable<T>> extends AbstractSet<T> im
      */
     @Override
     public boolean remove(Object o) {
-        // TODO
-        throw new NotImplementedError();
+        if (!(contains(o))) return false;
+        @SuppressWarnings("unchecked")
+        T t = (T) o;
+
+        root = deleteNode(root, t);
+        size--;
+        return true;
     }
+
+//    проверяем 4 случая: у узла нет дочерних узлов, eсть левый дочерний узел, есть правый дочерний узел, есть оба дочерних узла.
+    private Node<T> deleteNode(Node<T> currentNode, T value) {
+        int comparison = value.compareTo(currentNode.value);
+
+        if (comparison == 0) {
+            Node<T> left = currentNode.left;
+            Node<T> right = currentNode.right;
+            T v = currentNode.value;
+
+            if (left == null && right == null) {
+                return null;
+            }
+
+            if (left == null) {
+                return right;
+            }
+
+            if (right == null) {
+                return left;
+            }
+
+            Node<T> minInRightSubtree = findMinElement(right);
+            currentNode.value = minInRightSubtree.value;
+            currentNode.right = deleteNode(currentNode.right, minInRightSubtree.value);
+            return currentNode;
+        }
+
+        if (comparison < 0) {
+            currentNode.left = deleteNode(currentNode.left, value);
+            return currentNode;
+        }
+
+        if (comparison > 0) {
+            currentNode.right = deleteNode(currentNode.right, value);
+            return currentNode;
+        }
+
+        return currentNode;
+    }
+
+    private Node<T> findMinElement(Node<T> start) {
+        if (start.left == null) return start;
+        return findMinElement(start.left);
+    }
+
 
     @Nullable
     @Override
