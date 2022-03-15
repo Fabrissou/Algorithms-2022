@@ -227,14 +227,14 @@ public class BinarySearchTree<T extends Comparable<T>> extends AbstractSet<T> im
 //    Ресурсоемкость: T(1)
         @Override
         public boolean hasNext() {
-            if ((root != null) && (currentNode != null)) {
-                return currentNode.value != maxNode.value;
+            if (root == null) {
+                return false;
             } else {
                 if (currentNode == null) {
                     return true;
                 }
             }
-            return false;
+            return currentNode.value != maxNode.value;
         }
 
         /**
