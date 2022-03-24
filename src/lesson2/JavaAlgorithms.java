@@ -136,6 +136,40 @@ public class JavaAlgorithms {
         return answer.reverse().toString();
     }
 
+    static public String longestCommonSubstring1(String first, String second) {
+        StringBuilder answer = new StringBuilder();
+        int max = 0;
+        int maxI = 0;
+        for (int i = 0; i <= first.length() - 1; i++) {
+            for (int j = 0; j <= second.length() - 1; j++) {
+                if (first.charAt(i) == second.charAt(j)) {
+                    int ii = i;
+                    int jj = j;
+                    int length = 0;
+                    while ((ii < first.length()) && (jj < second.length()) && (first.charAt(ii) == second.charAt(jj))) {
+                        length++;
+                        ii++;
+                        jj++;
+                    }
+
+                    if (length > max) {
+                        max = length;
+                        maxI = i;
+                    }
+                }
+            }
+        }
+
+        while (max > 0) {
+            answer.append(first.charAt(maxI));
+            maxI++;
+            max--;
+        }
+
+
+        return answer.toString();
+    }
+
     /**
      * Число простых чисел в интервале
      * Простая

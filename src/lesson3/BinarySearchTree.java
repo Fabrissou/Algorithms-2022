@@ -127,17 +127,20 @@ public class BinarySearchTree<T extends Comparable<T>> extends AbstractSet<T> im
 //    Ресурсоемкость: T(1)
     @Override
     public boolean remove(Object o) {
-        if (!(contains(o))) return false;
         @SuppressWarnings("unchecked")
         T t = (T) o;
 
-        root = deleteNode(root, t);
-        size--;
-        return true;
+        try {
+            root = deleteNode(root, t);
+            size--;
+            return true;
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
     }
 
 //    проверяем 4 случая: у узла нет дочерних узлов, eсть левый дочерний узел, есть правый дочерний узел, есть оба дочерних узла.
-    private Node<T> deleteNode(Node<T> currentNode, T value) {
+     private Node<T> deleteNode(Node<T> currentNode, T value) {
         int comparison = value.compareTo(currentNode.value);
 
         if (comparison == 0) {
@@ -164,11 +167,17 @@ public class BinarySearchTree<T extends Comparable<T>> extends AbstractSet<T> im
         }
 
         if (comparison < 0) {
+            if (currentNode.left == null) {
+                throw new IllegalArgumentException();
+            }
             currentNode.left = deleteNode(currentNode.left, value);
             return currentNode;
         }
 
         if (comparison > 0) {
+            if (currentNode.right == null) {
+                throw new IllegalArgumentException();
+            }
             currentNode.right = deleteNode(currentNode.right, value);
             return currentNode;
         }
@@ -206,11 +215,16 @@ public class BinarySearchTree<T extends Comparable<T>> extends AbstractSet<T> im
     }
 
     public class BinarySearchTreeIterator implements Iterator<T> {
-        private Node<T> currentNode;
+        private Deque<Node<T>> stack;
+        private Node<T> previousNode;
         private Node<T> maxNode = findMaxElement(root);
 
         private BinarySearchTreeIterator() {
+            stack = new ArrayDeque<>();
 
+            for (Node<T> i = root; i != null; i = i.left) {
+                stack.push(i);
+            }
         }
 
         /**
@@ -227,14 +241,13 @@ public class BinarySearchTree<T extends Comparable<T>> extends AbstractSet<T> im
 //    Ресурсоемкость: T(1)
         @Override
         public boolean hasNext() {
-            if (root == null) {
+            if (previousNode == null && stack.isEmpty()) {
                 return false;
-            } else {
-                if (currentNode == null) {
-                    return true;
-                }
             }
-            return currentNode.value != maxNode.value;
+            if (((previousNode != null) && (previousNode.value == maxNode.value)) || (root == null)){
+                return false;
+            }
+            return true;
         }
 
         /**
@@ -250,47 +263,20 @@ public class BinarySearchTree<T extends Comparable<T>> extends AbstractSet<T> im
          *
          * Средняя
          */
-        private Node<T> findNextElement(Node<T> currentNode, Node<T> start) {
-            if (currentNode.right != null) {
-                return findMinElement(currentNode.right);
-            } else {
-                int compare = currentNode.value.compareTo(findPrevious(root, currentNode.value).value);
-
-                if (compare < 0) {
-                    if (currentNode.right != null) {
-                        return findMinElement(currentNode.right);
-                    } else {
-                        return findPrevious(root, currentNode.value);
-                    }
-                } else {
-                    while (compare > 0) {
-                        currentNode = findPrevious(root, currentNode.value);
-                        compare = currentNode.value.compareTo(findPrevious(root, currentNode.value).value);
-                    }
-
-                    if (currentNode.right != null) {
-                        return findPrevious(root, currentNode.value);
-                    }
-                }
-
-
-                return currentNode;
-            }
-        }
-
         //    Трдоемкость: O(log(N))
 //    Ресурсоемкость: T(1)
         @Override
         public T next() {
-            if (currentNode == null) {
-                currentNode = findMinElement(root);
-                return currentNode.value;
-            }
-            if (hasNext()) {
-                currentNode = findNextElement(currentNode, root);
-                return currentNode.value;
+            if (((previousNode == null) || (previousNode.right == null))) {
+                previousNode = stack.peek();
+                if (stack.isEmpty()) {throw new NoSuchElementException();}
+                return stack.poll().value;
             } else {
-                throw new NoSuchElementException();
+                for (Node<T> i = previousNode.right; i != null; i = i.left) {
+                    stack.push(i);
+                }
+                previousNode = stack.peek();
+                return stack.poll().value;
             }
         }
 
@@ -310,10 +296,15 @@ public class BinarySearchTree<T extends Comparable<T>> extends AbstractSet<T> im
 //    Ресурсоемкость: T(1)
         @Override
         public void remove() {
-            if (!((currentNode != null) && (BinarySearchTree.this.remove(currentNode.value)))) {
+            if (previousNode != null && previousNode.right != null) {
+                for (Node<T> i = previousNode.right; i != null; i = i.left) {
+                    stack.push(i);
+                }
+            }
+            if (!((previousNode != null) && (BinarySearchTree.this.remove(previousNode.value)))) {
                 throw new IllegalStateException();
             }
-
+            previousNode = null;
         }
     }
 
@@ -336,8 +327,7 @@ public class BinarySearchTree<T extends Comparable<T>> extends AbstractSet<T> im
     @NotNull
     @Override
     public SortedSet<T> subSet(T fromElement, T toElement) {
-        // TODO
-        throw new NotImplementedError();
+        throw new NoSuchElementException();
     }
 
     /**
