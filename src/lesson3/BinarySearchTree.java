@@ -327,7 +327,7 @@ public class BinarySearchTree<T extends Comparable<T>> extends AbstractSet<T> im
     @NotNull
     @Override
     public SortedSet<T> subSet(T fromElement, T toElement) {
-        throw new NoSuchElementException();
+        throw new NotImplementedError();
     }
 
     /**
