@@ -173,4 +173,16 @@ abstract class AbstractTrieTest {
         }
     }
 
+    protected fun myTest() {
+        val trie = Trie()
+        assertFalse(trie.iterator().hasNext())
+        trie.add("mnogobukv")
+        val iterator = trie.iterator()
+        assertTrue(iterator.hasNext())
+        assertEquals("mnogobukv", iterator.next())
+        assertFalse(iterator.hasNext())
+        iterator.remove()
+        assertTrue(trie.isEmpty())
+    }
+
 }

@@ -12,25 +12,6 @@ public class BinarySearchTree<T extends Comparable<T>> extends AbstractSet<T> im
         return root;
     }
 
-    Node<T> findPrevious(Node<T> start, T value) {
-        int comparison = value.compareTo(start.value);
-        if (comparison == 0) {
-            return start;
-        }
-        else if (comparison < 0) {
-            if (start.left == null) return findPrevious(root, start.value);
-            if (start.left.value == value) {
-                return start;
-            } else return findPrevious(start.left, value);
-        }
-        else {
-            if (start.right == null) return findPrevious(root, start.value);
-            if (start.right.value == value) {
-                return start;
-            } else return findPrevious(start.right, value);
-        }
-    }
-
 //make this private
     static class Node<T> {
         T value;
@@ -43,7 +24,6 @@ public class BinarySearchTree<T extends Comparable<T>> extends AbstractSet<T> im
     }
 
     private Node<T> root = null;
-
     private int size = 0;
 
     @Override
@@ -327,7 +307,7 @@ public class BinarySearchTree<T extends Comparable<T>> extends AbstractSet<T> im
     @NotNull
     @Override
     public SortedSet<T> subSet(T fromElement, T toElement) {
-        throw new NoSuchElementException();
+        throw new NotImplementedError();
     }
 
     /**

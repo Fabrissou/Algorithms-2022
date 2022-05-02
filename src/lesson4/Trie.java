@@ -1,7 +1,7 @@
 package lesson4;
 
 import java.util.*;
-import kotlin.NotImplementedError;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -92,8 +92,56 @@ public class Trie extends AbstractSet<String> implements Set<String> {
     @NotNull
     @Override
     public Iterator<String> iterator() {
-        // TODO
-        throw new NotImplementedError();
+        return new TrieIterator();
     }
 
+    public class TrieIterator implements Iterator<String> {
+        private String currentString;
+        private final ArrayDeque<String> stack;
+
+//    Трдоемкость: O(N)
+//    Ресурсоемкость: T(N)
+        private TrieIterator() {
+            stack = new ArrayDeque<>();
+            stackPush(root, "");
+        }
+
+        private void stackPush(Node node, String word) {
+            for (char child: node.children.keySet()) {
+                if (child == (char) 0) {
+                    stack.push(word);
+                } else {
+                    stackPush(node.children.get(child), word + child);
+                }
+            }
+        }
+
+//    Трдоемкость: O(1)
+//    Ресурсоемкость: T(1)
+        @Override
+        public boolean hasNext() {
+            return !stack.isEmpty();
+        }
+
+//    Трдоемкость: O(1)
+//    Ресурсоемкость: T(1)
+        @Override
+        public String next() {
+            if (hasNext()) {
+                currentString = stack.pop();
+                return currentString;
+            } else {
+                throw new NoSuchElementException();
+            }
+        }
+
+//    Трдоемкость: O(N)
+//    Ресурсоемкость: T(N)
+        @Override
+        public void remove() {
+            if (currentString == null) {throw new IllegalStateException();}
+            Trie.this.remove(currentString);
+            currentString = null;
+        }
+    }
 }

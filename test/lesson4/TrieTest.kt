@@ -26,4 +26,10 @@ class TrieTest : AbstractTrieTest() {
         doIteratorRemoveTest()
     }
 
+    @Test
+    @Tag("Example")
+    fun test() {
+        myTest()
+    }
+
 }
