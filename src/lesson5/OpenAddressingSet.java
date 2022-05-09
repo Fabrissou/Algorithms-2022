@@ -1,13 +1,14 @@
 package lesson5;
 
-import kotlin.NotImplementedError;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.AbstractSet;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.Set;
 
 public class OpenAddressingSet<T> extends AbstractSet<T> {
+    private final Object REMOVED = new Object();
 
     private final int bits;
 
@@ -67,7 +68,7 @@ public class OpenAddressingSet<T> extends AbstractSet<T> {
         int startingIndex = startingIndex(t);
         int index = startingIndex;
         Object current = storage[index];
-        while (current != null) {
+        while (current != null && current != REMOVED) {
             if (current.equals(t)) {
                 return false;
             }
@@ -93,9 +94,18 @@ public class OpenAddressingSet<T> extends AbstractSet<T> {
      *
      * Средняя
      */
+    // Трудоёмксость: O(N)
+    // Ресурсоёмкость: O(1)
     @Override
     public boolean remove(Object o) {
-        return super.remove(o);
+        if (this.contains(o)) {
+            int i;
+            for (i = startingIndex(o); !storage[i].equals(o); i = (i + 1) % capacity);
+            storage[i] = REMOVED;
+            size--;
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -111,7 +121,49 @@ public class OpenAddressingSet<T> extends AbstractSet<T> {
     @NotNull
     @Override
     public Iterator<T> iterator() {
-        // TODO
-        throw new NotImplementedError();
+        return new OpenAddressingSetIterator();
     }
+
+    public class OpenAddressingSetIterator implements Iterator<T> {
+        private Object currentObject;
+        private int i = 0;
+        private int iterated = 0;
+
+        // Трудоёмксость: O(1)
+        // Ресурсоёмкость: O(1)
+        @Override
+        public boolean hasNext() {
+            return iterated < size;
+        }
+
+        // Трудоёмксость: O(N)
+        // Ресурсоёмкость: O(1)
+        @Override
+        public T next() {
+            if (hasNext()) {
+                while (storage[i] == null || storage[i] == REMOVED) {
+                    i++;
+                }
+                currentObject = storage[i];
+                iterated++;
+                i++;
+                return (T) currentObject;
+            }
+
+            throw new NoSuchElementException();
+        }
+
+        // Трудоёмксость: O(1)
+        // Ресурсоёмкость: O(1)
+        @Override
+        public void remove() {
+            if (currentObject == null) {throw new IllegalStateException();}
+            storage[i - 1] = REMOVED;
+            currentObject = null;
+            size--;
+            iterated--;
+        }
+    }
+
+
 }
